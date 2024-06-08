@@ -43,7 +43,7 @@ class UserLocation {
     private String city;
     private String state;
     private String country;
-    private int postcode;
+    private String postcode;
     private UserCoordinates coordinates;
     private UserTimezone timezone;
 }
