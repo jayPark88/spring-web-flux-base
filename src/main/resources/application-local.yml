@@ -1,0 +1,10 @@
+service:
+  interface:
+    client:
+      url: http://127.0.0.1:8090/
+    admin:
+      url: http://127.0.0.1:8100/
+
+logging:
+  level:
+    root: info

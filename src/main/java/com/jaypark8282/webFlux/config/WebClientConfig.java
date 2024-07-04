@@ -8,7 +8,7 @@ import org.springframework.web.reactive.function.client.WebClient;
 @Configuration
 public class WebClientConfig {
 
-    @Value("${service.interface.sample.url}")
+    @Value("${service.interface.client.url}")
     private String sampleOpenApiUrl;
 
     // webClient Bean 등록
