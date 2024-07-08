@@ -9,13 +9,13 @@ import org.springframework.web.reactive.function.client.WebClient;
 public class WebClientConfig {
 
     @Value("${service.interface.client.url}")
-    private String sampleOpenApiUrl;
+    private String clientOpenApiUrl;
 
     // webClient Bean 등록
     @Bean
     public WebClient webClient(WebClient.Builder builder){
         return builder
-                .baseUrl(sampleOpenApiUrl).build();
+                .baseUrl(clientOpenApiUrl).build();
     }
 
 }
