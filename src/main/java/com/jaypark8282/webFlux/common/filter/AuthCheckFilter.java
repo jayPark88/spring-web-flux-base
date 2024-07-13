@@ -18,7 +18,7 @@ public class AuthCheckFilter implements WebFilter {
         String path = exchange.getRequest().getURI().getPath();
 
         // 요청 경로가 "/v1/auth/authorize"인 경우 필터 체인을 통과합니다.
-        if (path.equals("/v1/auth/authorize")) {
+        if (path.equals("/v1/auth/authorize") || path.equals("/v1/user/signUp")) {
             return chain.filter(exchange);
         }
 

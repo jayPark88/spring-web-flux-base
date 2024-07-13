@@ -1,7 +1,10 @@
-package com.jaypark8282.webFlux.api.v1.auth.service;
+package com.jaypark8282.webFlux.api.v1.user.service;
 
+import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.JsonNode;
-import com.jaypark8282.webFlux.api.v1.auth.dto.LoginDto;
+import com.fasterxml.jackson.databind.ObjectMapper;
+import com.jaypark8282.webFlux.api.v1.user.dto.request.UserDto;
+import com.jaypark8282.webFlux.api.v1.user.dto.response.SignUpResponseDto;
 import com.jaypark8282.webFlux.common.exception.CustomException;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
@@ -11,25 +14,25 @@ import org.springframework.web.reactive.function.client.ClientResponse;
 import org.springframework.web.reactive.function.client.WebClient;
 import reactor.core.publisher.Mono;
 
-import static com.jaypark8282.webFlux.common.eums.ResponseErrorCode.FAIL_401;
 import static com.jaypark8282.webFlux.common.eums.ResponseErrorCode.FAIL_500;
 
 @Service
 @RequiredArgsConstructor
-public class AuthService {
+public class UserService {
     private final WebClient webClient;
+    private final ObjectMapper objectMapper;
 
-    public Mono<String> authorize(LoginDto loginDto) {
+    public Mono<SignUpResponseDto> signUp(UserDto userDto) {
         return webClient.post()
-                .uri("client/v1/auth/login")
-                .bodyValue(loginDto)
+                .uri("client/v1/user/signUp")
+                .bodyValue(userDto)
                 .retrieve()
                 .onStatus(
                         HttpStatusCode::is5xxServerError,
                         this::handle5xxError
                 )
                 .bodyToMono(JsonNode.class)
-                .flatMap(this::extractTokenFromResponse);  // 비즈니스 로직을 private 메서드로 분리
+                .flatMap(this::extractTokenFromResponse);
     }
 
     private Mono<? extends Throwable> handle5xxError(ClientResponse clientResponse) {
@@ -40,13 +43,12 @@ public class AuthService {
                         HttpStatus.INTERNAL_SERVER_ERROR)));
     }
 
-    private Mono<String> extractTokenFromResponse(JsonNode jsonNode) {
-        JsonNode tokenNode = jsonNode.get("data").get("token");  // data 필드에서 token 필드를 추출
-        if (tokenNode != null) {
-            String token = tokenNode.asText();  // token 값을 문자열로 변환
-            return Mono.just(token);
-        } else {
-            return Mono.error(new RuntimeException("Token not found in response"));
+    private Mono<SignUpResponseDto> extractTokenFromResponse(JsonNode jsonNode) {
+        try {
+            SignUpResponseDto signUpResponseDto = objectMapper.treeToValue(jsonNode, SignUpResponseDto.class);
+            return Mono.just(signUpResponseDto);
+        } catch (JsonProcessingException e) {
+            throw new CustomException(FAIL_500.code(), e.getMessage(), HttpStatus.INTERNAL_SERVER_ERROR);
         }
     }
 }

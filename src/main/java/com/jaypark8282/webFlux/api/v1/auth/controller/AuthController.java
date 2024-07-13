@@ -15,10 +15,10 @@ import reactor.core.publisher.Mono;
 
 import java.util.Locale;
 
+@Slf4j
 @RestController
 @RequestMapping("/v1/auth")
 @RequiredArgsConstructor
-@Slf4j
 public class AuthController {
 
     private final AuthService authService;
